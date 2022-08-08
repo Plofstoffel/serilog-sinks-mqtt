@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Serilog.Sinks.MQTT
+/src/Serilog.Sinks.MQTT/bin/Debug/netstandard2.1
+/src/Serilog.Sinks.MQTT/obj
+/src/Serilog.Sinks.Mqtt.Tests/bin/Debug/net6.0
+/src/Serilog.Sinks.Mqtt.Tests/obj
+/src/Serilog.Sinks.Mqtt/bin/Debug
+/.vs/ProjectEvaluation
