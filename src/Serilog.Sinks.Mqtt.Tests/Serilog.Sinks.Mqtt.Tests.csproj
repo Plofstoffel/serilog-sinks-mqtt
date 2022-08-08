@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Serilog.Sinks.MQTT\Serilog.Sinks.Mqtt.csproj" />
+	  <ProjectReference Include="..\Serilog.Sinks.Mqtt\Serilog.Sinks.Mqtt.csproj" />
 	</ItemGroup>
 
 </Project>
