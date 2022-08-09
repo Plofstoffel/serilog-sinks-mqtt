@@ -136,10 +136,12 @@ namespace Serilog.Sinks.Mqtt.Tests
             .CreateLogger();
 
             SpinWait.SpinUntil(() => _mqttClient?.IsConnected == true, 5000);
-            
+
+            Thread.Sleep(500);
+
             log.Information("Information message");
 
-            SpinWait.SpinUntil(() => _recievedMessages.Count == 1, 15000);
+            SpinWait.SpinUntil(() => _recievedMessages.Count == 1, 30000);
 
             Assert.AreEqual(1, _recievedMessages.Count);
             var lastMessage = JsonConvert.DeserializeObject<MqttLogMessage>(_recievedMessages.First());
