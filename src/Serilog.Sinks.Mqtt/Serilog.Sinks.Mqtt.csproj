@@ -29,15 +29,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="serilog-sink-nuget.png" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Include="..\..\README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Include="..\..\serilog-sink-nuget.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
