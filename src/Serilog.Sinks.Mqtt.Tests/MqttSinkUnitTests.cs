@@ -147,8 +147,6 @@ namespace Serilog.Sinks.Mqtt.Tests
             Assert.AreEqual("Information message", lastMessage?.MessageTemplate);
 
             log.Dispose();
-
-            Assert.IsNull(log);
         }
     }
 }
