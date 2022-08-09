@@ -56,10 +56,5 @@ namespace Serilog.Sinks.Mqtt
                 disposed = true;
             }
         }
-
-        ~MqttSink()
-        {
-            Dispose(disposing: false);
-        }
     }
 }

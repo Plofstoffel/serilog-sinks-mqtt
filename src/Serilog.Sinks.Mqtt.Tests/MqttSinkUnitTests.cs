@@ -130,7 +130,7 @@ namespace Serilog.Sinks.Mqtt.Tests
                 .Build()
             };
 
-            var log = new LoggerConfiguration()
+            using var log = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.MqttSink(mqttSinkOptions)
             .CreateLogger();
@@ -148,7 +148,6 @@ namespace Serilog.Sinks.Mqtt.Tests
             Assert.AreEqual(LogEventLevel.Information, lastMessage?.Level);
             Assert.AreEqual("Information message", lastMessage?.MessageTemplate);
 
-            log.Dispose();
         }
     }
 }
