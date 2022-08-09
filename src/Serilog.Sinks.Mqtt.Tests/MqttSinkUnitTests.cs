@@ -2,9 +2,14 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Server;
+using Newtonsoft.Json;
 using Serilog.Debugging;
+using Serilog.Events;
+using Serilog.Formatting;
+using Serilog.Formatting.Json;
 using Serilog.Sinks.Mqtt;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Serilog.Sinks.Mqtt.Tests
 {
@@ -131,7 +136,9 @@ namespace Serilog.Sinks.Mqtt.Tests
             SpinWait.SpinUntil(() => _recievedMessages.Count == 1, 15000);
 
             Assert.AreEqual(1, _recievedMessages.Count);
-            Assert.AreEqual("Information message", _recievedMessages.First());
+            var lastMessage = JsonConvert.DeserializeObject<LogEvent>(_recievedMessages.First());
+            Assert.AreEqual(LogEventLevel.Information, lastMessage?.Level);
+            Assert.AreEqual("Information message", lastMessage?.RenderMessage());
         }
     }
 }
