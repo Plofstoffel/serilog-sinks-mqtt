@@ -136,9 +136,9 @@ namespace Serilog.Sinks.Mqtt.Tests
             SpinWait.SpinUntil(() => _recievedMessages.Count == 1, 15000);
 
             Assert.AreEqual(1, _recievedMessages.Count);
-            var lastMessage = JsonConvert.DeserializeObject<LogEvent>(_recievedMessages.First());
+            var lastMessage = JsonConvert.DeserializeObject<MqttLogMessage>(_recievedMessages.First());
             Assert.AreEqual(LogEventLevel.Information, lastMessage?.Level);
-            Assert.AreEqual("Information message", lastMessage?.RenderMessage());
+            Assert.AreEqual("Information message", lastMessage?.MessageTemplate);
         }
     }
 }
