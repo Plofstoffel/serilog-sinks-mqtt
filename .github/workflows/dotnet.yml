@@ -1,4 +1,8 @@
-name: .NET
+name: .NET CI
+
+env:
+  BUILD_VERSION: "1.0.${{github.run_number}}${{startsWith(github.ref, 'refs/heads/master') && '' || '-beta'}}"
+  BUILD_INFORMATION: "1.0.${{github.run_number}}${{startsWith(github.ref, 'refs/heads/master') && '' || '-beta'}}+Branch.${{github.ref_name}}.Sha.${{github.sha}}"
 
 on:
   push:
@@ -12,19 +16,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
     - uses: actions/checkout@v3
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+    
     - name: Restore dependencies
       run: dotnet restore
+    
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release -p:Version="${{env.BUILD_VERSION}}" -p:InformationalVersion="${{env.BUILD_INFORMATION}}"'
+    
     - name: Test
       run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/lcov.info" /p:CoverletOutputFormat=lcov
+    
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: ${{ github.workspace }}/coverage/lcov.info
+
+    - name: Create Packages
+      if: success() && github.event_name != 'pull_request'
+      run: 'dotnet pack --configuration Release --include-symbols --include-source --no-build --no-restore --output "${{github.workspace}}/artifacts" -p:PackageVersion="${{env.BUILD_VERSION}}"'
+
+    - name: Upload Artifacts
+      if: success() && github.event_name != 'pull_request'
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: artifacts
+        path: '${{github.workspace}}/artifacts'
+
+    - name: Publish Release Packages
+      if: success() && startsWith(github.ref, 'refs/heads/master')
+      run: dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY} --skip-duplicate
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
