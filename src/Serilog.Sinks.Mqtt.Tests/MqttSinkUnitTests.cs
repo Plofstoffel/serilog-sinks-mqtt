@@ -145,6 +145,10 @@ namespace Serilog.Sinks.Mqtt.Tests
             var lastMessage = JsonConvert.DeserializeObject<MqttLogMessage>(_recievedMessages.First());
             Assert.AreEqual(LogEventLevel.Information, lastMessage?.Level);
             Assert.AreEqual("Information message", lastMessage?.MessageTemplate);
+
+            log.Dispose();
+
+            Assert.IsNull(log);
         }
     }
 }
