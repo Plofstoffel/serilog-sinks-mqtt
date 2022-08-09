@@ -33,12 +33,10 @@ namespace Serilog.Sinks.Mqtt
 
         public void Emit(LogEvent logEvent)
         {
-            using (var render = new StringWriter())
-            {
-                _mqttSinkOptions.TextFormatter.Format(logEvent, render);
-                _mqttClient.EnqueueAsync(_mqttSinkOptions.DefaultTopic, render.ToString());
-            }
-            
+            using var render = new StringWriter();
+            _mqttSinkOptions.TextFormatter.Format(logEvent, render);
+            _mqttClient.EnqueueAsync(_mqttSinkOptions.DefaultTopic, render.ToString());
+
         }
 
         ~MqttSink()

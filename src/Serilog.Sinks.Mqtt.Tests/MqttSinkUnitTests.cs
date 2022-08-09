@@ -16,8 +16,8 @@ namespace Serilog.Sinks.Mqtt.Tests
     [TestClass]
     public class MqttSinkUnitTests
     {
-        private MqttServer _mqttServer;
-        private IManagedMqttClient _mqttClient;
+        private MqttServer? _mqttServer;
+        private IManagedMqttClient? _mqttClient;
         private static readonly List<string> _recievedMessages = new();
         private const int testPort = 1882;
         private const string testTopic = "testtopic/logs";
@@ -101,10 +101,16 @@ namespace Serilog.Sinks.Mqtt.Tests
         [TestCleanup]
         public async Task DisposeServer()
         {
-            await _mqttClient.StopAsync();
-            _mqttClient.Dispose();
-            await _mqttServer.StopAsync();
-            _mqttServer.Dispose();
+            if (_mqttClient != null)
+            {
+                await _mqttClient.StopAsync();
+                _mqttClient.Dispose();
+            }
+            if (_mqttServer != null)
+            {
+                await _mqttServer.StopAsync();
+                _mqttServer.Dispose();
+            }
         }
 
 
@@ -129,7 +135,7 @@ namespace Serilog.Sinks.Mqtt.Tests
             .WriteTo.MqttSink(mqttSinkOptions)
             .CreateLogger();
 
-            SpinWait.SpinUntil(() => _mqttClient.IsConnected, 5000);
+            SpinWait.SpinUntil(() => _mqttClient?.IsConnected == true, 5000);
             
             log.Information("Information message");
 
