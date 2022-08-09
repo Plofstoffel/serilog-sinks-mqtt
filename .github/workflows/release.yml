@@ -1,13 +1,8 @@
 name: .NET CD
 
-env:
-  BUILD_VERSION: "1.0.${{github.run_number}}${{startsWith(github.ref, 'refs/heads/main') && '' || '-beta'}}"
-
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "releases/**" ]
 
 jobs:
   build:
@@ -31,7 +26,7 @@ jobs:
     
     - name: Create Packages
       if: success() && github.event_name != 'pull_request'
-      run: 'dotnet pack --configuration Release --include-symbols --include-source --no-build --no-restore --output "${{github.workspace}}/artifacts" -p:PackageVersion="${{env.BUILD_VERSION}}"'
+      run: 'dotnet pack --configuration Release --include-symbols --include-source --no-build --no-restore --output "${{github.workspace}}/artifacts"'
 
     - name: Upload Artifacts
       if: success() && github.event_name != 'pull_request'
