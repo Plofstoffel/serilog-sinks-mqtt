@@ -7,6 +7,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageId>Serilog.Sinks.Mqtt</PackageId>
+		<PackageVersion>1.0.19</PackageVersion>
 		<Authors>Shaun Peusschers</Authors>
 		<Company>Shaun Peusschers</Company>
 		<Copyright>Copyright © Shaun Peusschers</Copyright>
@@ -23,10 +24,23 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Nullable>Warnings</Nullable>
+		<PackageIcon>serilog-sink-nuget.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Remove="serilog-sink-nuget.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\..\serilog-sink-nuget.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
