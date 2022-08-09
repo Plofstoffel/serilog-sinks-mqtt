@@ -2,6 +2,7 @@
 using Serilog.Configuration;
 using Serilog.Sinks.Mqtt;
 using System;
+using System.Threading.Tasks;
 
 namespace Serilog
 {
@@ -9,12 +10,12 @@ namespace Serilog
     {
         public static LoggerConfiguration MqttSink(
               this LoggerSinkConfiguration loggerConfiguration,
-              ManagedMqttClientOptions options,
-              string defaultTopic,
-              IFormatProvider formatProvider = null)
+              MqttSinkOptions mqttSinkOptions)
         {
-            var mqttClient = new MqttSink(formatProvider, options, defaultTopic);
-            mqttClient.CreateInstanceAsync();
+            var mqttClient = new MqttSink(mqttSinkOptions);
+            var task = Task.Run(async () => await mqttClient.CreateInstanceAsync());
+            task.Wait();
+            
             return loggerConfiguration.Sink(mqttClient);
         }
     }

@@ -2,27 +2,22 @@
 using MQTTnet.Extensions.ManagedClient;
 using Serilog.Core;
 using Serilog.Events;
-using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Serilog.Sinks.Mqtt
 {
-    public class MqttSink: ILogEventSink
+    public class MqttSink : ILogEventSink
     {
-        private const string _emptyMessage = "";
-        private readonly IFormatProvider _formatProvider;
         private readonly IManagedMqttClient _mqttClient;
-        private readonly ManagedMqttClientOptions _options;
-        private readonly string _topic;
+        private readonly MqttSinkOptions _mqttSinkOptions;
 
         public bool Initiated { get; protected set; }
 
-        public MqttSink(IFormatProvider formatProvider, ManagedMqttClientOptions options, string topic)
+        public MqttSink(MqttSinkOptions mqttSinkOptions)
         {
-            _formatProvider = formatProvider;
             _mqttClient = new MqttFactory().CreateManagedMqttClient();
-            _options = options;
-            _topic = topic;
+            _mqttSinkOptions = mqttSinkOptions;
         }
 
         public Task Initialize { get; }
@@ -31,16 +26,19 @@ namespace Serilog.Sinks.Mqtt
         {
             if (!Initiated)
             {
-                await _mqttClient.StartAsync(_options);
-                await _mqttClient.EnqueueAsync(_topic, _emptyMessage);
+                await _mqttClient.StartAsync(_mqttSinkOptions.ManagedMqttClientOptions);
                 Initiated = true;
             }
         }
 
         public void Emit(LogEvent logEvent)
         {
-            var message = logEvent.RenderMessage(_formatProvider);
-            _mqttClient.EnqueueAsync(_topic, message);
+            using (var render = new StringWriter())
+            {
+                _mqttSinkOptions.TextFormatter.Format(logEvent, render);
+                _mqttClient.EnqueueAsync(_mqttSinkOptions.DefaultTopic, render.ToString());
+            }
+            
         }
 
         ~MqttSink()

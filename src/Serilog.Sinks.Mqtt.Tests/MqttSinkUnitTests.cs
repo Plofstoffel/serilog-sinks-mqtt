@@ -13,7 +13,9 @@ namespace Serilog.Sinks.Mqtt.Tests
     {
         private MqttServer _mqttServer;
         private IManagedMqttClient _mqttClient;
-        private static List<string> _recievedMessages = new();
+        private static readonly List<string> _recievedMessages = new();
+        private const int testPort = 1882;
+        private const string testTopic = "testtopic/logs";
 
         [TestInitialize]
         public async Task InitializeTests()
@@ -35,7 +37,7 @@ namespace Serilog.Sinks.Mqtt.Tests
             var mqttFactory = new MqttFactory();
             var mqttServerOptions = new MqttServerOptionsBuilder()
                 .WithDefaultEndpoint()
-                .WithDefaultEndpointPort(1882)
+                .WithDefaultEndpointPort(testPort)
                 .Build();
 
             _mqttServer = mqttFactory.CreateMqttServer(mqttServerOptions);
@@ -51,8 +53,8 @@ namespace Serilog.Sinks.Mqtt.Tests
             _mqttClient = mqttFactory.CreateManagedMqttClient();
 
             var mqttClientOptions = new MqttClientOptionsBuilder()
-            .WithTcpServer("localhost", 1884)
-            .WithClientId($"TestClient{Guid.NewGuid().ToString()}")
+            .WithTcpServer("localhost", testPort)
+            .WithClientId($"testclient")
             .Build();
 
             var managedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
@@ -87,8 +89,8 @@ namespace Serilog.Sinks.Mqtt.Tests
                 return Task.CompletedTask;
             };
 
+            await _mqttClient.SubscribeAsync(testTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce);
             await _mqttClient.StartAsync(managedMqttClientOptions);
-            await _mqttClient.SubscribeAsync("testtopic/logs", MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
         }
 
         [TestCleanup]
@@ -105,17 +107,21 @@ namespace Serilog.Sinks.Mqtt.Tests
         public void WhenALogIsEmittedToTheSinkAllSubscribersRecieveTheMessage()
         {
             var mqttClientOptions = new MqttClientOptionsBuilder()
-            .WithTcpServer("localhost", 1884)
-            .WithClientId($"TestClient{Guid.NewGuid()}")
+            .WithTcpServer("localhost", testPort)
+            .WithClientId($"logclient")
             .Build();
 
-            var managedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
+            MqttSinkOptions mqttSinkOptions = new()
+            {
+                DefaultTopic = testTopic,
+                ManagedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
                 .WithClientOptions(mqttClientOptions)
-                .Build();
+                .Build()
+            };
 
             var log = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .WriteTo.MqttSink(managedMqttClientOptions, "testtopic/logs")
+            .WriteTo.MqttSink(mqttSinkOptions)
             .CreateLogger();
 
             SpinWait.SpinUntil(() => _mqttClient.IsConnected, 5000);
