@@ -2,7 +2,9 @@ name: .NET CD
 
 on:
   push:
-    branches: [ "releases/**" ]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -22,7 +24,7 @@ jobs:
       run: dotnet restore
     
     - name: Build
-      run: dotnet build --no-restore --configuration Release -p:Version="${{env.BUILD_VERSION}}"
+      run: dotnet build --no-restore --configuration Release
     
     - name: Create Packages
       if: success() && github.event_name != 'pull_request'
