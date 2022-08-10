@@ -9,5 +9,7 @@ namespace Serilog.Sinks.Mqtt
         public ManagedMqttClientOptions ManagedMqttClientOptions { get; set; }
         public string DefaultTopic { get; set; }
         public ITextFormatter TextFormatter { get; set; } = new JsonFormatter();
+        public MQTTnet.Protocol.MqttQualityOfServiceLevel MqttQualityOfServiceLevel { get; set; } = MQTTnet.Protocol.MqttQualityOfServiceLevel.AtMostOnce;
+        public bool RetainMessages { get; set; } = false;
     }
 }

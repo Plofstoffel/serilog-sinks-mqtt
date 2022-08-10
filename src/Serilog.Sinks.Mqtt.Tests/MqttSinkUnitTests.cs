@@ -127,7 +127,9 @@ namespace Serilog.Sinks.Mqtt.Tests
                 DefaultTopic = testTopic,
                 ManagedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
                 .WithClientOptions(mqttClientOptions)
-                .Build()
+                .Build(),
+                MqttQualityOfServiceLevel = MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce,
+                RetainMessages = false
             };
 
             using var log = new LoggerConfiguration()

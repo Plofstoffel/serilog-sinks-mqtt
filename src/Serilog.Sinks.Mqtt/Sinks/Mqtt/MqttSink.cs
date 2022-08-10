@@ -35,7 +35,7 @@ namespace Serilog.Sinks.Mqtt
         {
             using var render = new StringWriter();
             _mqttSinkOptions.TextFormatter.Format(logEvent, render);
-            _mqttClient.EnqueueAsync(_mqttSinkOptions.DefaultTopic, render.ToString());
+            _mqttClient.EnqueueAsync(_mqttSinkOptions.DefaultTopic, render.ToString(),_mqttSinkOptions.MqttQualityOfServiceLevel, _mqttSinkOptions.RetainMessages);
 
         }
 
