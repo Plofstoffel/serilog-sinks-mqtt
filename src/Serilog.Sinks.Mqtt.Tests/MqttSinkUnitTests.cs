@@ -128,7 +128,7 @@ namespace Serilog.Sinks.Mqtt.Tests
                 ManagedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
                 .WithClientOptions(mqttClientOptions)
                 .Build(),
-                MqttQualityOfServiceLevel = MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce,
+                MqttQualityOfServiceLevel = MQTTnet.Protocol.MqttQualityOfServiceLevel.AtMostOnce,
                 RetainMessages = false
             };
 

@@ -5,10 +5,34 @@ A Serilog sink that writes events to [MQTT](https://mqtt.org/)
 [![Coverage Status](https://coveralls.io/repos/github/Plofstoffel/serilog-sinks-mqtt/badge.svg?branch=main)](https://coveralls.io/github/Plofstoffel/serilog-sinks-mqtt?branch=main)
 ![GitHub](https://img.shields.io/github/license/Plofstoffel/serilog-sinks-mqtt)
 ![NuGet Version](https://img.shields.io/nuget/v/Serilog.Sinks.Mqtt)
+![NuGet Downloads](https://img.shields.io/nuget/dt/Serilog.Sinks.Mqtt)
 
 
-## Features
-
-### General
+## General
 
 * Sinks log messages to MQTT broker using [MQTTnet](https://www.nuget.org/packages/MQTTnet)'s [ManagedClient](https://www.nuget.org/packages/MQTTnet.Extensions.ManagedClient/)
+
+## How to use the Sink
+
+~~~C#
+    var mqttClientOptions = new MqttClientOptionsBuilder()
+    .WithTcpServer("localhost", testPort)
+    .WithClientId($"logclient")
+    .Build();
+
+    MqttSinkOptions mqttSinkOptions = new()
+    {
+        DefaultTopic = testTopic,
+        ManagedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
+        .WithClientOptions(mqttClientOptions)
+        .Build(),
+        MqttQualityOfServiceLevel = MQTTnet.Protocol.MqttQualityOfServiceLevel.AtMostOnce,
+        RetainMessages = false
+    };
+
+    var log = new LoggerConfiguration()
+    .WriteTo.MqttSink(mqttSinkOptions)
+    .CreateLogger();
+
+    log.Information("Information message");
+~~~
